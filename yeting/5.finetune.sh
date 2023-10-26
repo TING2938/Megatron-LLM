@@ -1,22 +1,26 @@
 
-CHECKPOINT_PATH=/root/models/llama-2-7b-chat-hf-megatron_shard_tp_2_pp_1
-DATA_ARGS="--data_path /root/datasets/booksum_megatron/booksum_megatron_text_document"
-TRAINED_PATH=/root/models/llama-2-7b-chat-hf-megatron_shard_tp_2_pp_1-pretrained
-TENSORBOARD_PATH=$TRAINED_PATH/logging
-MODEL=llama2
 TP=2
 PP=1
+MT_CHECKPOINT_PATH=/root/models/original_epfLLM_megatron/llama-2-7b-chat-hf-megatron
+SHARED_CPT=${MT_CHECKPOINT_PATH}/shard-tp${TP}-pp${PP}
+
+CHECKPOINT_PATH=${SHARED_CPT}
+DATA_ARGS="--data_path /root/datasets/booksum_megatron/booksum_megatron_text_document"
+TRAINED_PATH=${SHARED_CPT}-pretrained
+TENSORBOARD_PATH=$TRAINED_PATH/logging
+MODEL=llama2
 MICRO_BATCH=1
 GLOBAL_BATCH=2
 TOKENIZER=SentencePieceTokenizer
+VOCAB_FILE=/root/models/original_epfLLM_megatron/llama-2-7b-chat-hf-megatron/tokenizer.model
 
 DISTRIBUTED_ARGS="--nproc_per_node 2 \
 	--nnodes 1 \
 	--node_rank 0 \
 	--master_addr localhost \
-	--master_port 6000"
+	--master_port 6100"
 
-EXTRA_ARGS="--vocab_file=/root/models/llama-2-7b-chat-hf-megatron/tokenizer.model \
+EXTRA_ARGS="--vocab_file=${VOCAB_FILE} \
 	--use_rms_norm \
 	--glu_activation swiglu \
 	--no_tie_embed_logits \
@@ -50,7 +54,7 @@ COMMON_ARGS="--use_flash_attn \
 	--scalar_loss_mask=0.0 \
 	--rope_scaling_factor 1.0 \
 	--metrics perplexity accuracy count_loss_mask \
-	--train_iters 1000"
+	--train_iters 10"
 
 
 CUDA_VISIBLE_DEVICES="4,5" CUDA_DEVICE_MAX_CONNECTIONS=1 OMP_NUM_THREADS=16 \

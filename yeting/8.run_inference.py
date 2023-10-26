@@ -2,11 +2,19 @@ import torch
 import transformers
 from transformers import LlamaForCausalLM, LlamaTokenizer
 
-tokenizer=LlamaTokenizer.from_pretrained("/root/models/llama-2-7b-chat-hf-megatron_shard_tp_2_pp_1-pretrained-merged-hf")
-print(tokenizer)
+TP = 2
+PP = 1
+
+TRAINED_PATH = f"/root/models/original_epfLLM_megatron/llama-2-7b-chat-hf-megatron/shard-tp{TP}-pp{PP}-pretrained"
+MERGED_PATH = f"{TRAINED_PATH}-merged"
+MERGED_PATH_HF = f"{MERGED_PATH}-hf"
+
+tokenizer = LlamaTokenizer.from_pretrained(MERGED_PATH_HF)
+model = LlamaForCausalLM.from_pretrained(MERGED_PATH_HF)
+
 pipeline = transformers.pipeline(
     "text-generation",
-    model=LlamaForCausalLM.from_pretrained("/root/models/llama-2-7b-chat-hf-megatron_shard_tp_2_pp_1-pretrained-merged-hf"),
+    model=model,
     tokenizer=tokenizer,
     torch_dtype=torch.bfloat16,
     device="cuda:4"
