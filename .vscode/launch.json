@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "finetune",
+            "name": "finetune.py for pretrain",
             "type": "python",
             "request": "launch",
             "program": "/usr/local/bin/torchrun",
@@ -74,7 +74,7 @@
             "justMyCode": true
         },
         {
-            "name": "data_preprocessing",
+            "name": "preprocess_data.py",
             "type": "python",
             "request": "launch",
             "program": "tools/preprocess_data.py",
@@ -86,6 +86,26 @@
                 "--chunk_size=32",
                 "--workers=1",
                 "--no_new_tokens",
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "preprocess_instruct_data.py",
+            "type": "python",
+            "request": "launch",
+            "program": "tools/preprocess_instruct_data.py",
+            "args": [
+                "--input=/root/datasets/OpenOrca/data.jsonl",
+                "--output_prefix=/root/datasets/OpenOrca/OpenOrca_megatron",
+                "--tokenizer_type=SentencePieceTokenizer",
+                "--vocab_file=/root/models/llama-2-7b-chat-hf/tokenizer.model",
+                "--chunk_size=32",
+                "--workers=32",
+                "--vocab_extra_ids_list=<|im_start|>,<|im_end|>",
+                "--question_key=question",
+                "--answer_key=response",
+                "--system_key=system_prompt"
             ],
             "console": "integratedTerminal",
             "justMyCode": true

@@ -1,0 +1,11 @@
+python ../../tools/preprocess_instruct_data.py \
+	--input=/root/datasets/OpenOrca/data.jsonl \
+	--output_prefix=/root/datasets/OpenOrca/OpenOrca_megatron \
+	--tokenizer_type=SentencePieceTokenizer \
+	--vocab_file=/root/models/llama-2-7b-chat-hf/tokenizer.model \
+	--chunk_size=32 \
+	--workers=32 \
+	--vocab_extra_ids_list "<|im_start|>,<|im_end|>" \
+	--question_key=question \
+	--answer_key=response \
+	--system_key=system_prompt  # Optional
