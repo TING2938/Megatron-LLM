@@ -6,7 +6,7 @@ TRAINED_PATH=/root/models/original_epfLLM_megatron/llama-2-7b-chat-hf-megatron/s
 MERGED_PATH=${TRAINED_PATH}-merged
 MERGED_PATH_HF=${MERGED_PATH}-hf
 
-python ../../weights_conversion/megatron_to_hf.py \
+python weights_conversion/megatron_to_hf.py \
     --input_dir=${MERGED_PATH} \
 	--output_dir=${MERGED_PATH_HF} \
     --tokenizer_name_or_path=/root/models/llama-2-7b-chat-hf
