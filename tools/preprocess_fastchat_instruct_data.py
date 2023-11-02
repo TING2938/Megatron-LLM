@@ -182,11 +182,7 @@ def get_args():
     group.add_argument('--log_interval', type=int, default=100,
                        help='Interval between progress updates')
 
-    args = parser.parse_args("--input=/root/FastChat/data/dummy_conversation.json \
-                             --tokenizer_path /root/models/llama-2-7b-chat-hf \
-                             --output_prefix /root/test/test_hf\
-                             --chunk_size=32 \
-	                         --workers=32".split())
+    args = parser.parse_args()
     return args
 
 
