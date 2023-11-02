@@ -328,8 +328,8 @@ def round_to_multiple_of(x: int, y: int) -> int:
 
 def instruction_collator(data):
     args = get_args()
-    # tokenizer = get_tokenizer()
-    pad_id = 0 # tokenizer.pad
+    tokenizer = get_tokenizer()
+    pad_id = tokenizer.pad
     seq_len = args.seq_length
 
     if args.variable_seq_lengths:
