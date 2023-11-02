@@ -21,13 +21,13 @@ class InstructionDataset(Dataset):
                  indexed_datasets: dict[str, Dataset], seq_length: int):
 
         self.indexed_input_ids = indexed_datasets["input_ids"]
-        self.indexed_labels = indexed_datasets["labels"]
+        self.indexed_label_mask = indexed_datasets["label_mask"]
         self.indexed_attention_mask = indexed_datasets["attention_mask"]
 
         # validate indices
         assert np.min(sample_indices) >= 0
         assert np.max(sample_indices) < len(self.indexed_input_ids)
-        assert len(self.indexed_input_ids) == len(self.indexed_labels)
+        assert len(self.indexed_input_ids) == len(self.indexed_label_mask)
         assert len(self.indexed_input_ids) == len(self.indexed_attention_mask)
 
         self.name = name
@@ -41,15 +41,15 @@ class InstructionDataset(Dataset):
         # Get the shuffled index.
         idx = self.sample_indices[idx]
         input_ids = self.indexed_input_ids.get(idx)
-        labels = self.indexed_labels.get(idx)
+        label_mask = self.indexed_label_mask.get(idx)
         attention_mask = self.indexed_attention_mask.get(idx)
         assert input_ids is not None \
-            and labels is not None \
+            and label_mask is not None \
             and attention_mask is not None \
-            and input_ids.shape == labels.shape == attention_mask.shape
+            and input_ids.shape == label_mask.shape == attention_mask.shape
         return {
             "input_ids": input_ids.astype(np.int64), 
-            "labels": labels.astype(np.int64),
+            "label_mask": label_mask.astype(np.bool8),
             "attention_mask": attention_mask.astype(np.bool8)
         }
 
@@ -140,7 +140,7 @@ def get_indexed_datasets_(data_prefix: str, data_impl: str,
     print_rank_0(" > building dataset index ...")
     start_time = time.time()
     indexed_input_ids = make_dataset(f"{data_prefix}-input_ids", data_impl, skip_warmup)
-    indexed_labels = make_dataset(f"{data_prefix}-labels", data_impl, skip_warmup)
+    indexed_label_mask = make_dataset(f"{data_prefix}-label_mask", data_impl, skip_warmup)
     indexed_attention_mask = make_dataset(f"{data_prefix}-attention_mask", data_impl, skip_warmup)
     assert indexed_input_ids is not None
     print_rank_0(" > finished creating indexed dataset in "
@@ -152,7 +152,7 @@ def get_indexed_datasets_(data_prefix: str, data_impl: str,
     print_rank_0("    number of tokens: {}".format(n_tokens))
     return {
         "input_ids": indexed_input_ids, 
-        "labels": indexed_labels, 
+        "label_mask": indexed_label_mask, 
         "attention_mask": indexed_attention_mask
     }
 
@@ -340,30 +340,29 @@ def instruction_collator(data):
     # pad data to seq_len, create attention mask
     batch_size = len(data)
     attention_mask = torch.zeros((batch_size, seq_len), dtype=torch.long)
-    labels = torch.full_like(attention_mask, -100)
+    label_mask = torch.full_like(attention_mask, 0)
     input_ids = torch.full_like(attention_mask, pad_id)
 
 
     for i, x in enumerate(data):
         ids = x["input_ids"]
-        lbs = x["labels"]
-        msk = x["attention_mask"]
+        lb_msk = x["label_mask"]
+        att_msk = x["attention_mask"]
         l = len(ids)
 
         if l < seq_len:
-            attention_mask[i, :l] = torch.from_numpy(msk)
+            attention_mask[i, :l] = torch.from_numpy(att_msk)
             input_ids[i, :l] = torch.from_numpy(ids)
-            labels[i, :l] = torch.from_numpy(lbs)
+            label_mask[i, :l] = torch.from_numpy(lb_msk)
         else:
             input_ids[i] = torch.from_numpy(ids[:seq_len])
-            labels[i] = torch.from_numpy(lbs[:seq_len])
-            attention_mask[i] = torch.from_numpy(msk[:seq_len])
+            label_mask[i] = torch.from_numpy(lb_msk[:seq_len])
+            attention_mask[i] = torch.from_numpy(att_msk[:seq_len])
 
-    assistant_mask = (labels != -100).long() # label mask
     pad_mask = (input_ids == pad_id).long()
     return {
         "text": input_ids, 
         "attention_mask": attention_mask,
-        "assistant_mask": assistant_mask, 
+        "assistant_mask": label_mask, 
         "pad_mask": pad_mask
     }

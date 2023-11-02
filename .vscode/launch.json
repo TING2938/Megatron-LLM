@@ -79,7 +79,7 @@
             "request": "launch",
             "program": "/usr/local/bin/torchrun",
             "env": {
-                "CUDA_VISIBLE_DEVICES": "1,2",
+                "CUDA_VISIBLE_DEVICES": "2,3",
                 "OMP_NUM_THREADS": "16",
                 "CUDA_DEVICE_MAX_CONNECTIONS": "1"
             },
