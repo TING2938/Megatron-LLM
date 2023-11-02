@@ -14,6 +14,8 @@ from megatron.utils import get_ltor_masks_and_position_ids, average_losses_acros
 from megatron.data.gpt_dataset import build_train_valid_test_datasets as gpt_build_datasets
 from megatron.data.instruction_dataset import instruction_collator
 from megatron.data.instruction_dataset import build_train_valid_test_datasets as instruct_build_datasets
+from megatron.data.instruction_fastchat_dataset import instruction_collator as instruct_fastchat_collator
+from megatron.data.instruction_fastchat_dataset import build_train_valid_test_datasets as instruct_build_fastchat_datasets
 from megatron.initialize import initialize_megatron
 from megatron.metrics import MetricInput, get_metric
 
@@ -104,7 +106,7 @@ def get_batch(data_iterator):
     datatype = torch.int64
     if args.data_type == "gpt":
         keys = ["text"]
-    elif args.data_type == "instruction":
+    elif args.data_type == "instruction" or args.data_type == "fastchat_instruction":
         keys = ["text", "attention_mask", "assistant_mask", "pad_mask"]
     else:
         raise KeyError(f"Unknown dataset type {args.data_type}")
@@ -242,7 +244,7 @@ def extra_args(parser):
                        default="gpt")
     group.add_argument("--model_type", choices={"encoder_or_decoder", "encoder_and_decoder"},
                        default="encoder_or_decoder")
-    group.add_argument("--data_type", choices={"gpt", "instruction"},
+    group.add_argument("--data_type", choices={"gpt", "instruction", "fastchat_instruction"},
                        default="gpt")
     group.add_argument("--log_learning_rate_to_tensorboard", type=bool, default=True)
     group.add_argument("--log_loss_scale_to_tensorboard", type=bool, default=True)
@@ -256,8 +258,10 @@ if __name__ == "__main__":
 
     if args.data_type == "gpt":
         collate_fn = None
-    else:
+    elif args.data_type == "instruction":
         collate_fn = instruction_collator
+    elif args.data_type == "fastchat_instruction":
+        collate_fn = instruct_fastchat_collator
 
 
     pretrain(args, data_provider, model_provider,  ModelType.encoder_or_decoder,

@@ -73,7 +73,7 @@
             "justMyCode": true
         },
         {
-            "name": "finetune_fastchat_data.py",
+            "name": "finetune_fastchat_data",
             "type": "python",
             "request": "launch",
             "program": "/usr/local/bin/torchrun",
@@ -85,7 +85,7 @@
             "args": [
                 "--nproc_per_node=2",
                 "--master_port=6100",
-                "finetune_fastchat_data.py",
+                "finetune.py",
                 "--tensor_model_parallel_size=2",
                 "--pipeline_model_parallel_size=1",
                 "--load=/root/models/original_epfLLM_megatron/llama-2-7b-chat-hf-megatron/shard-tp2-pp1",
@@ -95,7 +95,7 @@
                 "--model_name=llama2",
                 "--finetune",
                 "--variable_seq_lengths",
-                "--data_type=instruction",
+                "--data_type=fastchat_instruction",
                 "--tokenizer_type=PretrainedFromHF",
                 "--tokenizer_name_or_path=/root/models/llama-2-7b-chat-hf",
                 "--bf16",
