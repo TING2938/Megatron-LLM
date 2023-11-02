@@ -11,8 +11,8 @@ TENSORBOARD_PATH=$TRAINED_PATH/logging
 MODEL=llama2
 MICRO_BATCH=1
 GLOBAL_BATCH=2
-TOKENIZER=SentencePieceTokenizer
-VOCAB_FILE=/root/models/original_epfLLM_megatron/llama-2-7b-chat-hf-megatron/tokenizer.model
+TOKENIZER=PretrainedFromHF
+TOKENIZER_PATH=/root/models/llama-2-7b-chat-hf 
 
 DISTRIBUTED_ARGS="--nproc_per_node 2 \
 	--nnodes 1 \
@@ -20,11 +20,9 @@ DISTRIBUTED_ARGS="--nproc_per_node 2 \
 	--master_addr localhost \
 	--master_port 6100"
 
-EXTRA_ARGS="--vocab_file=${VOCAB_FILE} \
-	--use_rms_norm \
+EXTRA_ARGS="--use_rms_norm \
 	--glu_activation swiglu \
 	--no_tie_embed_logits \
-	--vocab_extra_ids_list [bib_ref],[/bib_ref],[fig_ref],[/fig_ref],[bib],[/bib],[fig],[/fig],[table],[/table],[formula],[/formula] \
 	--layernorm_epsilon 1e-5"
 
 COMMON_ARGS="--use_flash_attn \
@@ -67,10 +65,12 @@ torchrun $DISTRIBUTED_ARGS finetune.py \
        $DATA_ARGS \
        --model_name $MODEL \
        --tokenizer_type $TOKENIZER \
+	   --tokenizer_name_or_path ${TOKENIZER_PATH} \
        --bf16 \
-	   --no_new_tokens \
        --global_batch_size $GLOBAL_BATCH \
        --micro_batch_size $MICRO_BATCH \
        --num_workers=2 \
        $EXTRA_ARGS \
        $COMMON_ARGS
+
+

@@ -233,7 +233,7 @@ def main(model_name: str = "falcon", size: int = 7, out: Optional[Path] = None,
                 "padded_vocab_size": 32000,
                 "use_rms_norm": True,
                 "tie_embed_logits": False,
-                "tokenizer_type": "SentencePieceTokenizer"}
+                "tokenizer_type": "PretrainedFromHF"}
         if model_name == "llama":
             args.update({"max_position_embeddings": 2048, "seq_length": 2048,
                          "layernorm_epsilon": 1e-6})

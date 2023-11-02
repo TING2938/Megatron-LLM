@@ -960,10 +960,13 @@ def _add_data_args(parser):
                                 'BertWordPieceCase',
                                 'GPT2BPETokenizer',
                                 'SentencePieceTokenizer',
-                                'FalconTokenizer'],
+                                'FalconTokenizer',
+                                'PretrainedFromHF'],
                        help='What type of tokenizer to use.')
     group.add_argument('--tokenizer_model', type=str, default=None,
                        help='Sentencepiece tokenizer model.')
+    group.add_argument('--tokenizer_name_or_path', type=str, default=None,
+                       help='Path to the tokenizer, for PretrainedFromHF.')
     group.add_argument("--no_new_tokens", action="store_false", dest="new_tokens",
                        help=("Do not add special tokens (e.g. CLS, MASK, etc) "
                              "in the sentenciepiece tokenizer"))

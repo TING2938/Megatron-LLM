@@ -69,9 +69,7 @@ def hf_provider(name: str, cache_dir: Optional[Path], device: str,
               "assuming it's raw llama2 weights instead")
         model = Llama2Wrapper(cache_dir)
     elif name == "llama2":
-        model = LlamaForCausalLM.from_pretrained(
-            f"meta-llama/Llama-2-{size}b-hf", cache_dir=cache_dir
-        )
+        model = LlamaForCausalLM.from_pretrained(cache_dir)
     else:
         raise KeyError(f"Model {name} not implemented")
     return model.eval().requires_grad_(False).to(device)

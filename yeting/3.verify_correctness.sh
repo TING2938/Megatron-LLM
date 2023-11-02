@@ -8,12 +8,12 @@ HF_CHECKPOINT_PATH=/root/models/llama-2-7b-chat-hf
 DATA_PATH=/root/datasets/booksum_megatron/booksum_megatron_text_document
 
 torchrun $DISTRIBUTED_ARGS verify_correctness.py \
-	--model_name=llama \
+	--model_name=llama2 \
 	--model_size=7 \
-	--load ${MT_CHECKPOINT_PATH} \
-	--data_path ${DATA_PATH} \
-	--tokenizer_type=SentencePieceTokenizer \
-	--vocab_file ${MT_CHECKPOINT_PATH}/tokenizer.model \
-	--huggingface_cache ${HF_CHECKPOINT_PATH} \
+	--load=${MT_CHECKPOINT_PATH} \
+	--data_path=${DATA_PATH} \
+	--tokenizer_type=PretrainedFromHF \
+    --tokenizer_name_or_path=${HF_CHECKPOINT_PATH}  \
+	--huggingface_cache=${HF_CHECKPOINT_PATH} \
 	--huggingface_device=cuda:5 \
 	$COMMON_ARGS $LLAMA_ARGS  # dont include LLAMA_ARGS if using Falcon

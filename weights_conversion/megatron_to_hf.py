@@ -340,7 +340,10 @@ def write_falcon_model(
 def write_tokenizer(args: Namespace):
     if args.model in {"llama", "llama2", "codellama"}:
         args.tokenizer_type = "SentencePieceTokenizer"
-        if args.vocab_file:
+        if args.tokenizer_name_or_path:
+            hf_tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_name_or_path, cache_dir=args.cache_dir)
+            args.tokenizer_type = "PretrainedFromHF"
+        elif args.vocab_file:
             # prevent "single file or url is deprecated and won't be possible anymore in v5" warning,
             # use parent directory instead
             p = Path(args.vocab_file)
@@ -376,7 +379,9 @@ def write_tokenizer(args: Namespace):
     args.tensor_model_parallel_size = 1
     mt_tokenizer = build_tokenizer(args)
 
-    if args.tokenizer_type == "SentencePieceTokenizer":
+    if args.tokenizer_type == "PretrainedFromHF":
+        hf_tokenizer = mt_tokenizer.tokenizer
+    elif args.tokenizer_type == "SentencePieceTokenizer":
         if mt_tokenizer.cls is not None:
             hf_tokenizer.add_tokens("<CLS>", special_tokens=True)
             hf_tokenizer.cls_token_id = mt_tokenizer.cls
@@ -430,7 +435,6 @@ def write_tokenizer(args: Namespace):
             warnings.warn(f"Token {value} not found in megatron tokenizer")
 
     print("Final HF Tokenizer configuration:")
-    print(hf_tokenizer)
     hf_tokenizer.save_pretrained(args.output_dir)
 
 
