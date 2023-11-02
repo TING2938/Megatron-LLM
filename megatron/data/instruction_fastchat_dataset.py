@@ -183,7 +183,7 @@ def _build_train_valid_test_datasets(data_prefix, data_impl: str, splits_string:
 
     # Indexed dataset.
     indexed_datasets = get_indexed_datasets_(data_prefix, data_impl, skip_warmup)
-    total_num_of_documents = len(indexed_datasets["text"])
+    total_num_of_documents = len(indexed_datasets["input_ids"])
     splits = get_train_valid_test_split_(splits_string, total_num_of_documents)
 
     # Print stats about the splits.

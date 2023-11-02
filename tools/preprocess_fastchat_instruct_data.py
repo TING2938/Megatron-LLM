@@ -100,7 +100,7 @@ def preprocess(
 
     return dict(
         input_ids=input_ids,
-        labels=targets,
+        label_mask=targets.ne(IGNORE_TOKEN_ID),
         attention_mask=input_ids.ne(tokenizer.pad_token_id),
     )
 
@@ -130,7 +130,7 @@ class Encoder(object):
         ret = preprocess([data], Encoder.tokenizer)
         return len(data), \
                 ret["input_ids"][0].to(torch.int), \
-                ret["labels"][0].to(torch.int), \
+                ret["label_mask"][0].to(torch.int), \
                 ret["attention_mask"][0].to(torch.int)
 
 
@@ -204,7 +204,7 @@ def main():
             DatasetWriter(args.output_prefix, vocab_size, args.dataset_impl,
                           "input_ids") as input_ids_writer, \
             DatasetWriter(args.output_prefix, vocab_size, args.dataset_impl,
-                          "labels") as labels_writer, \
+                          "label_mask") as label_mask_writer, \
             DatasetWriter(args.output_prefix, vocab_size, args.dataset_impl,
                           "attention_mask") as attention_mask_writer:
 
@@ -215,10 +215,10 @@ def main():
         total_bytes_processed = 0
         print("Time to startup:", startup_end - startup_start)
 
-        for i, (size, input_ids, labels, attention_mask) in enumerate(docs, start=1):
+        for i, (size, input_ids, label_mask, attention_mask) in enumerate(docs, start=1):
             total_bytes_processed += size
             input_ids_writer.add_item(input_ids)
-            labels_writer.add_item(labels)
+            label_mask_writer.add_item(label_mask)
             attention_mask_writer.add_item(attention_mask)
 
             if i % args.log_interval == 0:
