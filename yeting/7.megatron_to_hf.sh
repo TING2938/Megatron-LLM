@@ -9,5 +9,4 @@ MERGED_PATH_HF=${MERGED_PATH}-hf
 python weights_conversion/megatron_to_hf.py \
     --input_dir=${MERGED_PATH} \
 	--output_dir=${MERGED_PATH_HF} \
-    --vocab_file=/root/models/llama-2-7b-chat-hf-megatron/tokenizer.model \
-    --no_new_tokens
+    --tokenizer_name_or_path=/root/models/llama-2-7b-chat-hf

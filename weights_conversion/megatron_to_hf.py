@@ -451,6 +451,7 @@ def main():
                         required=True)
     parser.add_argument("--cache_dir", help="Huggingface cache_dir (optional)")
     parser.add_argument("--vocab_file", type=str, help="Path to the vocab file")
+    parser.add_argument("--tokenizer_name_or_path", type=str, default=None, help="Path to tokenizer")
     parser.add_argument("--vocab_extra_ids_list",
                         help="comma separated list of special vocab ids to add to the tokenizer")
     parser.add_argument("--override_special_tokens", nargs="*", default=[],

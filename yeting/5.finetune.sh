@@ -55,7 +55,7 @@ COMMON_ARGS="--use_flash_attn \
 	--train_iters 10"
 
 
-CUDA_VISIBLE_DEVICES="4,5" CUDA_DEVICE_MAX_CONNECTIONS=1 OMP_NUM_THREADS=16 \
+CUDA_VISIBLE_DEVICES="2,3" CUDA_DEVICE_MAX_CONNECTIONS=1 OMP_NUM_THREADS=16 \
 torchrun $DISTRIBUTED_ARGS finetune.py \
        --tensor_model_parallel_size $TP \
        --pipeline_model_parallel_size $PP  \

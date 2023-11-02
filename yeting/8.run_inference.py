@@ -8,6 +8,7 @@ PP = 1
 TRAINED_PATH = f"/root/models/original_epfLLM_megatron/llama-2-7b-chat-hf-megatron/shard-tp{TP}-pp{PP}-pretrained"
 MERGED_PATH = f"{TRAINED_PATH}-merged"
 MERGED_PATH_HF = f"{MERGED_PATH}-hf"
+# MERGED_PATH_HF = f"/root/models/llama-2-7b-chat-hf"
 
 tokenizer = LlamaTokenizer.from_pretrained(MERGED_PATH_HF)
 model = LlamaForCausalLM.from_pretrained(MERGED_PATH_HF)
@@ -17,7 +18,7 @@ pipeline = transformers.pipeline(
     model=model,
     tokenizer=tokenizer,
     torch_dtype=torch.bfloat16,
-    device="cuda:4"
+    device="cuda:2"
 )
 prompt = """#= a function that returns the fibonacci number of its argument =#
 function fibonacci(n::Int)::Int
